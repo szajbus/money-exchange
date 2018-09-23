@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["michal.szajbe@gmail.com"]
 
   spec.summary       = %q{Money gem integration with Open Exchange Rates API}
-  spec.description   = %q{This gem provides money-gem-compatible rates store connected to Open Exchange Rates API.}
+  spec.description   = %q{This gem provides money-gem-compatible rates store connected to Open Exchange Rates API. It offers flexible caching mechanisms and OXR API quota protection.}
   spec.homepage      = "https://github.com/szajbus/money-exchange"
   spec.license       = "MIT"
 

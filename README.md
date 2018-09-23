@@ -2,6 +2,12 @@
 
 Money gem integration with Open Exchange Rates API.
 
+Development goals:
+
+* seamless integration with `money` gem
+* flexible caching
+* Open Exchange Rates API quota protection
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -20,17 +26,14 @@ Or install it yourself as:
 
 ## Usage
 
-Example setup with Ruby on Rails.
-
-Create and configure `MoneyExchange::Bank` and connect it to `Money`.
+Create and configure `MoneyExchange::Bank` and set it as `Money.default_bank`.
 
 ```ruby
 require 'money_exchange'
 
 bank = MoneyExchange::Bank.new(
   client: MoneyExchange::Client::OXR.new(ENV['OXR_APP_ID']),
-  cache_store: Rails.cache,
-  ttl: 12.hours
+  ttl: 24 * 60 * 60
 )
 
 Money.default_bank = bank
@@ -39,8 +42,33 @@ Money.default_bank = bank
 It will make `Money` use it transparently for currency conversion.
 
 ```ruby
-Money.new(10000, 'USD').exchange_to('EUR').format
-# => "€85,14"
+Money.new(10000, 'USD').exchange_to('EUR')
+# => #<Money fractional:85 currency:EUR>
+```
+
+### Caching
+
+Exchange rates are cached internally on the rates store level for the number of seconds set with `ttl` option (defaults to 24 hours). If you want to use external cache store, e.g. the same as used in your Rails application, provide it as `cache_store` option.
+
+```ruby
+MoneyExchange::Bank.new(
+  cache_store: Rails.cache,
+  ttl: 12 * 60 * 60
+)
+```
+
+### Open Exchange Rates API limits
+
+OXR imposes usage limits in their API. In order to protect your quota, don't use the actual API in `development` or `test` environments. Instead configure the bank to use the local client preloaded with locally cached (sample) data.
+
+Just save a response from https://openexchangerates.org/api/latest.json?app_id=OXR_APP_ID locally and load it when configuring the bank.
+
+```ruby
+data = JSON.parse(File.read("path/to/oxr-response.json"))
+
+MoneyExchange::Bank.new(
+  client: MoneyExchange::Client::Local.new(data)
+)
 ```
 
 ## Development
