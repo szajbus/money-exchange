@@ -1,4 +1,5 @@
 require "money_exchange/bank"
+require "money_exchange/cache/null_store"
 require "money_exchange/client/local"
 require "money_exchange/client/oxr"
 require "money_exchange/store"

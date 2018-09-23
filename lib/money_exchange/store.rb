@@ -8,7 +8,7 @@ module MoneyExchange
       super
 
       @client      = opts[:client]
-      @cache_store = opts[:cache_store]
+      @cache_store = opts[:cache_store] || Cache::NullStore.new
       @ttl         = opts[:ttl] || 24 * 60 * 60
       @loaded_at   = nil
       @iso_base    = nil
